@@ -30,6 +30,8 @@ wget -q -O - http://web01:80/
 
 docker inspect web01|grep galaxy-net
 
+docker inspect web01|grep NetworkMode
+
 docker network connect galaxy-net a10efce35e13
 
 docker network rm galaxy-net 
