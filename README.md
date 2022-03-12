@@ -9,4 +9,4 @@ docker login galaxydockerdev01.azurecr.io -u galaxydockerdev01
 
 password: ac=gujhFScyEQANObYtribuR5NqYpHuI
 
-docker push galaxytrainingdev.azurecr.io/website_zegarra:1.0.0
+docker push galaxydockerdev01.azurecr.io/website_robertramirezg:latest
