@@ -9,7 +9,7 @@ docker tag website:1.0.0 galaxydockerdev01.azurecr.io/website_robertramirezg:lat
 Url: galaxydockerdev01.azurecr.io
 user: galaxydockerdev01
 
-docker login <<Url>> -u <<user>>
+docker login <Url> -u <user>
 
 docker login galaxydockerdev01.azurecr.io -u galaxydockerdev01
 
