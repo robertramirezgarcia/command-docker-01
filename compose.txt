@@ -1,0 +1,8 @@
+## Levantar contenedores definidos en un docker-compose.yml
+docker-compose up
+
+## Bajar el contenedor
+docker-compose down
+
+## Levantar solo uno en especifico
+docker-compose up website -d
