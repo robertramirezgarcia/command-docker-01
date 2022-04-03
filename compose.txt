@@ -13,3 +13,91 @@ docker-compose up website -d
 
 https://github.com/mzegarras/cm-interfaces
 https://github.com/mzegarras/WebFluxCI/blob/main/docker-compose.yaml
+
+===============================================================================
+version: '3.8'
+services:
+  backend:
+      image: backend
+      container_name: backend
+      restart: always
+      build:
+        context: .
+        dockerfile: ./docker/Dockerfile
+      #ports:
+      #  - 3000:3000
+      environment:
+        URL_DB: 'mongodb://mongo:27017/interfaces'
+        URL_DB_USER: root
+        URL_DB_PWD: "pwd123456!"
+      depends_on:
+        - mongo
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    #ports:
+    #  - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "pwd123456!"
+      MONGO_INITDB_DATABASE: interfaces
+  mongo-express:
+    image: mongo-express
+    restart: always
+    #ports:
+    #  - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "pwd123456!"
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: interfaces
+      ME_CONFIG_MONGODB_SERVER: mongo
+  gates:
+    image: "nginx:1.13.8-alpine"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    ports:
+      - 8080:8082
+    depends_on:
+      - mongo
+      - mongo-express
+      - backend            
+
+====================================================================
+nginx.conf
+====================================================================
+http {
+
+
+ server {
+   listen 8082;
+   ssl off;
+   ssl_verify_client off;
+   server_tokens off;
+
+   location / {
+     proxy_pass http://mongo-express:8081/;
+   }
+
+   location /programs {
+     proxy_pass http://backend:3000/programs;
+   }
+
+  location  /express {
+    proxy_pass http://mongo-express:8081/;
+    proxy_redirect     off;
+    proxy_set_header   Host $host;
+  }
+
+   
+
+ }
+}
+events { worker_connections 1024; }
+
+=================================================================
+*backend, mongo, mongo-express son servicios
+*gates es un servicio que expone un proxy reverso
+*en el archivo nginx.conf se configura el llamado que se realiza a cada una de las rutas, por ejemplo:
+
+cuando se llame a /programs se redirigirá al servicio llamado backend. Si el container_name está configurado en el servicio entonces se apunta a este nombre.
